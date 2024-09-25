@@ -3,12 +3,18 @@
 import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
-
+import readline from "readline";
 import chalk from "chalk";
 
 const bigBoldBlue = chalk.blue.bold;
 
 console.log(bigBoldBlue("@Rpranshu ™"));
+
+// Create a readline interface to interact with the user
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
 const projectName = process.argv[2] || "next-tailwind-app";
 
@@ -82,9 +88,52 @@ module.exports = {
   }
 };
 
+// Install the selected UI library
+const installUILibrary = (library) => {
+  console.log(`Installing ${library}...`);
+  const projectPath = path.join(process.cwd(), projectName);
+
+  let installCommand;
+  switch (library) {
+    case "Chakra UI":
+      installCommand = `npm install @chakra-ui/react @emotion/react @emotion/styled framer-motion`;
+      break;
+    case "PrimeReact":
+      installCommand = `npm install primereact primeicons`;
+      break;
+    case "Shadcn":
+      // Install shadcn as a package and initialize it with a script
+      installCommand = `npx shadcn@latest init
+`;
+      break;
+    default:
+      console.log("No UI library selected.");
+      return;
+  }
+
+  execSync(installCommand, { cwd: projectPath, stdio: "inherit" });
+};
+
+// Ask the user which UI library to install
+const askUserForUILibrary = () => {
+  rl.question(
+    `Which UI library would you like to install? (Chakra UI, PrimeReact, Shadcn, or none): `,
+    (answer) => {
+      const library = answer.trim();
+      if (["Chakra UI", "PrimeReact", "Shadcn"].includes(library)) {
+        installUILibrary(library);
+      } else {
+        console.log("Skipping UI library installation.");
+      }
+      rl.close();
+    }
+  );
+};
+
 const run = async () => {
   createNextApp();
   installTailwind();
+  askUserForUILibrary();
   console.log("Next.js app with Tailwind CSS is ready!");
 };
 
