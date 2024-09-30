@@ -3,18 +3,12 @@
 import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
-import readline from "readline";
+import inquirer from "inquirer";
 import chalk from "chalk";
 
 const bigBoldBlue = chalk.blue.bold;
 
 console.log(bigBoldBlue("@Rpranshu ™"));
-
-// Create a readline interface to interact with the user
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
 
 const projectName = process.argv[2] || "next-tailwind-app";
 
@@ -102,9 +96,7 @@ const installUILibrary = (library) => {
       installCommand = `npm install primereact primeicons`;
       break;
     case "Shadcn":
-      // Install shadcn as a package and initialize it with a script
-      installCommand = `npx shadcn@latest init
-`;
+      installCommand = `npx shadcn@latest init`;
       break;
     default:
       console.log("No UI library selected.");
@@ -114,26 +106,28 @@ const installUILibrary = (library) => {
   execSync(installCommand, { cwd: projectPath, stdio: "inherit" });
 };
 
-// Ask the user which UI library to install
-const askUserForUILibrary = () => {
-  rl.question(
-    `Which UI library would you like to install? (Chakra UI, PrimeReact, Shadcn, or none): `,
-    (answer) => {
-      const library = answer.trim();
-      if (["Chakra UI", "PrimeReact", "Shadcn"].includes(library)) {
-        installUILibrary(library);
-      } else {
-        console.log("Skipping UI library installation.");
-      }
-      rl.close();
-    }
-  );
+// Ask the user which UI library to install using inquirer
+const askUserForUILibrary = async () => {
+  const { library } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "library",
+      message: "Which UI library would you like to install?",
+      choices: ["Chakra UI", "PrimeReact", "Shadcn", "None"],
+    },
+  ]);
+
+  if (library !== "None") {
+    installUILibrary(library);
+  } else {
+    console.log("Skipping UI library installation.");
+  }
 };
 
 const run = async () => {
   createNextApp();
   installTailwind();
-  askUserForUILibrary();
+  await askUserForUILibrary();
   console.log("Next.js app with Tailwind CSS is ready!");
 };
 
