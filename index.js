@@ -14,23 +14,37 @@ const projectName = process.argv[2] || "next-tailwind-app";
 
 const createNextApp = () => {
   console.log("Creating Next.js app...");
-  execSync(`npx create-next-app@latest ${projectName} --typescript --eslint`, {
-    stdio: "inherit",
-  });
+  try {
+    execSync(
+      `npx create-next-app@latest ${projectName} --typescript --eslint`,
+      {
+        stdio: "inherit",
+        shell: true,
+      }
+    );
+  } catch (error) {
+    console.error("Failed to create Next.js app:", error);
+  }
 };
 
 const installTailwind = () => {
   console.log("Installing Tailwind CSS...");
   const projectPath = path.join(process.cwd(), projectName);
 
-  execSync(`npm install -D tailwindcss postcss autoprefixer`, {
-    cwd: projectPath,
-    stdio: "inherit",
-  });
-  execSync(`npx tailwindcss init -p`, { cwd: projectPath, stdio: "inherit" });
+  try {
+    execSync(`npm install -D tailwindcss postcss autoprefixer`, {
+      cwd: projectPath,
+      stdio: "inherit",
+      shell: true,
+    });
+    execSync(`npx tailwindcss init -p`, {
+      cwd: projectPath,
+      stdio: "inherit",
+      shell: true,
+    });
 
-  // Create Tailwind config and CSS file
-  const tailwindConfig = `
+    // Create Tailwind config and CSS file
+    const tailwindConfig = `
 module.exports = {
   content: [
     './app/**/*.{js,ts,jsx,tsx}',
@@ -43,42 +57,43 @@ module.exports = {
   plugins: [],
 }
 `;
-  const cssContent = `
+    const cssContent = `
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 `;
 
-  fs.writeFileSync(
-    path.join(projectPath, "tailwind.config.js"),
-    tailwindConfig
-  );
-  fs.mkdirSync(path.join(projectPath, "styles"), { recursive: true });
-  fs.writeFileSync(path.join(projectPath, "styles/globals.css"), cssContent);
-
-  // Update the _app.tsx or global layout file to include Tailwind
-  const appFilePathAppRouter = path.join(projectPath, "app/layout.tsx");
-  const appFilePathPagesRouter = path.join(projectPath, "pages/_app.tsx");
-
-  let appFile;
-  if (fs.existsSync(appFilePathAppRouter)) {
-    // App Router (app/layout.tsx)
-    appFile = fs.readFileSync(appFilePathAppRouter, "utf-8");
-    appFile = appFile.replace(
-      `import './globals.css'`,
-      `import './globals.css';\nimport 'tailwindcss/tailwind.css';`
+    fs.writeFileSync(
+      path.join(projectPath, "tailwind.config.js"),
+      tailwindConfig
     );
-    fs.writeFileSync(appFilePathAppRouter, appFile, "utf-8");
-  } else if (fs.existsSync(appFilePathPagesRouter)) {
-    // Pages Router (pages/_app.tsx)
-    appFile = fs.readFileSync(appFilePathPagesRouter, "utf-8");
-    appFile = appFile.replace(
-      `import '../styles/globals.css'`,
-      `import '../styles/globals.css';\nimport 'tailwindcss/tailwind.css';`
-    );
-    fs.writeFileSync(appFilePathPagesRouter, appFile, "utf-8");
-  } else {
-    console.log("Error: Neither app/layout.tsx nor pages/_app.tsx exists");
+    fs.mkdirSync(path.join(projectPath, "styles"), { recursive: true });
+    fs.writeFileSync(path.join(projectPath, "styles/globals.css"), cssContent);
+
+    // Update the _app.tsx or global layout file to include Tailwind
+    const appFilePathAppRouter = path.join(projectPath, "app/layout.tsx");
+    const appFilePathPagesRouter = path.join(projectPath, "pages/_app.tsx");
+
+    let appFile;
+    if (fs.existsSync(appFilePathAppRouter)) {
+      appFile = fs.readFileSync(appFilePathAppRouter, "utf-8");
+      appFile = appFile.replace(
+        `import './globals.css'`,
+        `import './globals.css';\nimport 'tailwindcss/tailwind.css';`
+      );
+      fs.writeFileSync(appFilePathAppRouter, appFile, "utf-8");
+    } else if (fs.existsSync(appFilePathPagesRouter)) {
+      appFile = fs.readFileSync(appFilePathPagesRouter, "utf-8");
+      appFile = appFile.replace(
+        `import '../styles/globals.css'`,
+        `import '../styles/globals.css';\nimport 'tailwindcss/tailwind.css';`
+      );
+      fs.writeFileSync(appFilePathPagesRouter, appFile, "utf-8");
+    } else {
+      console.log("Error: Neither app/layout.tsx nor pages/_app.tsx exists");
+    }
+  } catch (error) {
+    console.error("Failed to install Tailwind CSS:", error);
   }
 };
 
@@ -87,23 +102,31 @@ const installUILibrary = (library) => {
   console.log(`Installing ${library}...`);
   const projectPath = path.join(process.cwd(), projectName);
 
-  let installCommand;
-  switch (library) {
-    case "Chakra UI":
-      installCommand = `npm install @chakra-ui/react @emotion/react @emotion/styled framer-motion`;
-      break;
-    case "PrimeReact":
-      installCommand = `npm install primereact primeicons`;
-      break;
-    case "Shadcn":
-      installCommand = `npx shadcn@latest init`;
-      break;
-    default:
-      console.log("No UI library selected.");
-      return;
-  }
+  try {
+    let installCommand;
+    switch (library) {
+      case "Chakra UI":
+        installCommand = `npm install @chakra-ui/react @emotion/react @emotion/styled framer-motion`;
+        break;
+      case "PrimeReact":
+        installCommand = `npm install primereact primeicons`;
+        break;
+      case "Shadcn":
+        installCommand = `npx shadcn@latest init`;
+        break;
+      default:
+        console.log("No UI library selected.");
+        return;
+    }
 
-  execSync(installCommand, { cwd: projectPath, stdio: "inherit" });
+    execSync(installCommand, {
+      cwd: projectPath,
+      stdio: "inherit",
+      shell: true,
+    });
+  } catch (error) {
+    console.error(`Failed to install ${library}:`, error);
+  }
 };
 
 // Ask the user which UI library to install using inquirer
