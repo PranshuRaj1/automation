@@ -147,24 +147,11 @@ const askUserForUILibrary = async () => {
   }
 };
 
-const extension = async () => {
-  try {
-    installCommand = "next-tailwind-kit";
-    execSync(installCommand, {
-      cwd: projectPath,
-      stdio: "inherit",
-      shell: true,
-    });
-  } catch (error) {
-    console.error(`Failed to install kit`);
-  }
-};
-
 const run = async () => {
   createNextApp();
   installTailwind();
   await askUserForUILibrary();
-  //await extension();
+
   console.log("Next.js app with Tailwind CSS is ready!");
 };
 
