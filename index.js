@@ -142,6 +142,10 @@ const askUserForUILibrary = async () => {
 
   if (library !== "None") {
     installUILibrary(library);
+    console.log(bigBoldBlue("Note:- "));
+    console.log(
+      "The warning occurs due to a version conflict between react 18 and react-lorem-component, which only supports react 16. To fix this, either update @chakra-ui/react to a compatible version, use dependency overrides, or downgrade your react version to avoid the conflict."
+    );
   } else {
     console.log("Skipping UI library installation.");
   }
