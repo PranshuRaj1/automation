@@ -1,6 +1,6 @@
 {
   "name": "eazze",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "",
   "type": "module",
   "main": "index.js",
@@ -19,8 +19,14 @@
     "@eslint/object-schema": "^2.1.4",
     "chalk": "^5.3.0",
     "cross-env": "^7.0.3",
+    "eazze": "^2.1.5",
     "glob": "^11.0.0",
     "inquirer": "^11.1.0",
     "rimraf": "^6.0.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16"
   }
 }

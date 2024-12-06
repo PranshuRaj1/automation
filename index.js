@@ -1,29 +1,13 @@
-#!/usr/bin/env node
-
-import { execSync } from "child_process";
-import fs from "fs";
-import path from "path";
-import inquirer from "inquirer";
-import chalk from "chalk";
-
-const bigBoldBlue = chalk.blue.bold;
-
-console.log(bigBoldBlue("@Rpranshu ™"));
-
-const projectName = process.argv[2] || "next-tailwind-app";
-
 const createNextApp = () => {
   console.log("Creating Next.js app...");
   try {
-    execSync(
-      `npx create-next-app@latest ${projectName} --typescript --eslint`,
-      {
-        stdio: "inherit",
-        shell: true,
-      }
-    );
+    execSync(`npx create-next-app@latest ${projectName}`, {
+      stdio: "inherit",
+      shell: true,
+    });
   } catch (error) {
-    console.error("Failed to create Next.js app:", error);
+    console.error("Failed to create Next.js app:", error.message);
+    process.exit(1); // Exit if app creation fails
   }
 };
 
@@ -43,7 +27,6 @@ const installTailwind = () => {
       shell: true,
     });
 
-    // Create Tailwind config and CSS file
     const tailwindConfig = `
 module.exports = {
   content: [
@@ -57,43 +40,45 @@ module.exports = {
   plugins: [],
 }
 `;
-    const cssContent = `
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-`;
 
     fs.writeFileSync(
       path.join(projectPath, "tailwind.config.js"),
       tailwindConfig
     );
     fs.mkdirSync(path.join(projectPath, "styles"), { recursive: true });
-    fs.writeFileSync(path.join(projectPath, "styles/globals.css"), cssContent);
+    fs.writeFileSync(
+      path.join(projectPath, "styles/globals.css"),
+      `
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+`
+    );
 
-    // Update the _app.tsx or global layout file to include Tailwind
     const appFilePathAppRouter = path.join(projectPath, "app/layout.tsx");
-    const appFilePathPagesRouter = path.join(projectPath, "pages/_app.tsx");
+    const appFilePathPagesRouter = path.join(projectPath, "pages/app.tsx");
 
-    let appFile;
     if (fs.existsSync(appFilePathAppRouter)) {
-      appFile = fs.readFileSync(appFilePathAppRouter, "utf-8");
+      let appFile = fs.readFileSync(appFilePathAppRouter, "utf-8");
       appFile = appFile.replace(
         `import './globals.css'`,
         `import './globals.css';\nimport 'tailwindcss/tailwind.css';`
       );
       fs.writeFileSync(appFilePathAppRouter, appFile, "utf-8");
     } else if (fs.existsSync(appFilePathPagesRouter)) {
-      appFile = fs.readFileSync(appFilePathPagesRouter, "utf-8");
+      let appFile = fs.readFileSync(appFilePathPagesRouter, "utf-8");
       appFile = appFile.replace(
         `import '../styles/globals.css'`,
         `import '../styles/globals.css';\nimport 'tailwindcss/tailwind.css';`
       );
       fs.writeFileSync(appFilePathPagesRouter, appFile, "utf-8");
     } else {
-      console.log("Error: Neither app/layout.tsx nor pages/_app.tsx exists");
+      console.log(
+        "Error: Neither app/layout.tsx nor pages/_app.tsx exists. Skipping file update."
+      );
     }
   } catch (error) {
-    console.error("Failed to install Tailwind CSS:", error);
+    console.error("Failed to install Tailwind CSS:", error.message);
   }
 };
 
