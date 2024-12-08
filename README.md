@@ -14,7 +14,7 @@ To install **eazze**, use the following commands:
 
 ```bash
 npm install eazze
-next-tailwind-kit
+npx next-tailwind-kit
 ```
 
 ```bash
