@@ -20,7 +20,7 @@ npx next-tailwind-kit
 ```bash
 ## Example
 step 1) Navigate to your desired directory:
-step-2) cd my-project-directory'
+step-2) cd my-project-directory
 ## commands
 npm install eazze
 npx next-tailwind-kit
