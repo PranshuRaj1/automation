@@ -23,7 +23,7 @@ step 1) Navigate to your desired directory:
 step-2) cd my-project-directory'
 ## commands
 npm install eazze
-next-tailwind-kit
+npx next-tailwind-kit
 ```
 
 Step-4) Select the UI library you want to install (Shadcn, Chakra UI, PrimeReact).
